@@ -8,14 +8,14 @@ import java.net.SocketAddress;
 import java.net.URI;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class HealthCheckWebServer extends NettyWebServer {
 
-    HealthCheckRegistry registry;
+    private HealthCheckRegistry registry;
 
     public HealthCheckWebServer(int port) {
-        super(port);
-        init();
+        this(Executors.newCachedThreadPool(), port);
     }
 
     public HealthCheckWebServer(Executor executor, int port) {

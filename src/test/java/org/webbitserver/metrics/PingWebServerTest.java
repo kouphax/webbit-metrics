@@ -17,7 +17,7 @@ import static com.jayway.restassured.RestAssured.port;
 import static org.hamcrest.Matchers.equalTo;
 
 @RunWith(JUnit4.class)
-public class PingWebServerTests  {
+public class PingWebServerTest {
 
     private NettyWebServer server;
 

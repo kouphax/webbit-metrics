@@ -14,7 +14,7 @@ import java.util.concurrent.Executors;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(JUnit4.class)
-public class MetricsHandlerTests {
+public class MetricsHandlerTest {
 
     MetricRegistry registry;
     MetricsHandler handler;

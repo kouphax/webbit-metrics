@@ -10,7 +10,7 @@ import org.webbitserver.stub.StubHttpResponse;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(JUnit4.class)
-public class PingHandlerTests {
+public class PingHandlerTest {
 
     @Test
     public void willReturnPongForAllRequests() throws Exception {

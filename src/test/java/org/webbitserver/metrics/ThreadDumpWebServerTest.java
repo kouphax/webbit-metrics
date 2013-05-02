@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.not;
 
 
 @RunWith(JUnit4.class)
-public class ThreadDumpWebServerTests {
+public class ThreadDumpWebServerTest {
 
     private NettyWebServer server;
 

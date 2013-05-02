@@ -13,9 +13,10 @@ import org.webbitserver.stub.StubHttpResponse;
 import java.util.concurrent.Executors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(JUnit4.class)
-public class HealthCheckHandlerTests {
+public class HealthCheckHandlerTest {
 
     HealthCheckRegistry registry;
     HealthChecksHandler handler;
@@ -35,6 +36,7 @@ public class HealthCheckHandlerTests {
 
         assertEquals(501, response.status());
         assertEquals("application/json", response.header("Content-Type"));
+        assertTrue(response.ended());
     }
 
     @Test
@@ -52,6 +54,7 @@ public class HealthCheckHandlerTests {
         assertEquals(200, response.status());
         assertEquals("application/json", response.header("Content-Type"));
         assertEquals("{\"always-passes\":{\"healthy\":true}}", response.contentsString());
+        assertTrue(response.ended());
     }
 
     @Test
@@ -63,7 +66,6 @@ public class HealthCheckHandlerTests {
                 return Result.unhealthy("failed");
             }
         });
-
         registry.register("always-passes", new HealthCheck() {
             @Override
             protected Result check() throws Exception {
@@ -76,5 +78,6 @@ public class HealthCheckHandlerTests {
         assertEquals(500, response.status());
         assertEquals("application/json", response.header("Content-Type"));
         assertEquals("{\"always-fails\":{\"healthy\":false,\"message\":\"failed\"},\"always-passes\":{\"healthy\":true}}", response.contentsString());
+        assertTrue(response.ended());
     }
 }
