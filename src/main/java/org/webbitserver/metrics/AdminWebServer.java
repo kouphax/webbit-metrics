@@ -17,6 +17,7 @@ import java.net.URI;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class AdminWebServer extends NettyWebServer {
 
@@ -37,81 +38,34 @@ public class AdminWebServer extends NettyWebServer {
             "    </ul>\n" +
             "</body>\n" +
             "</html>";
-    private HealthCheckRegistry healthchecks;
-    private MetricRegistry metrics;
+
+    private final HealthCheckRegistry healthchecks;
+    private final MetricRegistry metrics;
 
     public AdminWebServer(int port) {
-        this(Executors.newCachedThreadPool(), port, new HealthCheckRegistry());
+        this(Executors.newCachedThreadPool(), port);
     }
 
     public AdminWebServer(Executor executor, int port) {
-        this(executor, port, new HealthCheckRegistry());
+        super(executor, port);
+        this.healthchecks = new HealthCheckRegistry();
+        this.metrics = new MetricRegistry();
     }
 
     public AdminWebServer(Executor executor, SocketAddress socketAddress, URI publicUri) {
-        this(executor, socketAddress, publicUri, new HealthCheckRegistry());
-    }
-
-    public AdminWebServer(int port, HealthCheckRegistry healthchecks) {
-        this(Executors.newCachedThreadPool(), port, healthchecks, new MetricRegistry());
-    }
-
-    public AdminWebServer(Executor executor, int port, HealthCheckRegistry healthchecks) {
-        this(executor, port, healthchecks, new MetricRegistry());
-    }
-
-    public AdminWebServer(Executor executor, SocketAddress socketAddress, URI publicUri, HealthCheckRegistry healthchecks) {
-        this(executor, socketAddress, publicUri, healthchecks, new MetricRegistry());
-    }
-
-    public AdminWebServer(int port, MetricRegistry metrics) {
-        this(Executors.newCachedThreadPool(), port, new HealthCheckRegistry(), metrics);
-    }
-
-    public AdminWebServer(Executor executor, int port, MetricRegistry metrics) {
-        this(executor, port, new HealthCheckRegistry(), metrics);
-    }
-
-    public AdminWebServer(Executor executor, SocketAddress socketAddress, URI publicUri, MetricRegistry metrics) {
-        this(executor, socketAddress, publicUri, new HealthCheckRegistry(), metrics);
-    }
-
-    public AdminWebServer(int port, HealthCheckRegistry healthchecks, MetricRegistry metrics) {
-        super(Executors.newCachedThreadPool(), port);
-        this.healthchecks = healthchecks;
-        this.metrics = metrics;
-        init();
-    }
-
-    public AdminWebServer(Executor executor, int port, HealthCheckRegistry healthchecks, MetricRegistry metrics) {
-        super(executor, port);
-        this.healthchecks = healthchecks;
-        this.metrics = metrics;
-        init();
-    }
-
-    public AdminWebServer(Executor executor, SocketAddress socketAddress, URI publicUri, HealthCheckRegistry healthchecks, MetricRegistry metrics) {
         super(executor, socketAddress, publicUri);
-        this.healthchecks = healthchecks;
-        this.metrics = metrics;
-        init();
+        this.healthchecks = new HealthCheckRegistry();
+        this.metrics = new MetricRegistry();
     }
 
-    public HealthCheckRegistry healthchecks(){
-        return this.healthchecks;
+    @Override
+    public Future<NettyWebServer> start() {
+        buildService();
+        return super.start();
     }
 
-    public MetricRegistry metrics(){
-        return this.metrics;
-    }
-
-    private void init(){
-
-        Executor executor = this.getExecutor();
-        ExecutorService service = null;
-        if(executor instanceof ExecutorService){
-            service = (ExecutorService) executor;
-        }
+    private void buildService(){
+        ExecutorService service = getExecutorService();
 
         // this handler will return a simple root view for the admin
         add("/", new HttpHandler() {
@@ -126,5 +80,14 @@ public class AdminWebServer extends NettyWebServer {
         add("/dump", new ThreadDumpHandler());
         add("/healthchecks", new HealthChecksHandler(healthchecks, service));
         add("/metrics", new MetricsHandler(metrics, service));
+    }
+
+    private ExecutorService getExecutorService() {
+        Executor executor = this.getExecutor();
+        ExecutorService service = null;
+        if(executor instanceof ExecutorService){
+            service = (ExecutorService) executor;
+        }
+        return service;
     }
 }
