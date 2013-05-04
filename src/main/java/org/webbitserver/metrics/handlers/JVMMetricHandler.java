@@ -2,32 +2,39 @@ package org.webbitserver.metrics.handlers;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.json.MetricsModule;
+import com.codahale.metrics.jvm.BufferPoolMetricSet;
+import com.codahale.metrics.jvm.GarbageCollectorMetricSet;
+import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
+import com.codahale.metrics.jvm.ThreadStatesGaugeSet;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.webbitserver.HttpControl;
 import org.webbitserver.HttpHandler;
 import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
 
-import java.util.concurrent.ExecutorService;
-import static java.util.concurrent.TimeUnit.*;
+import javax.management.MBeanServer;
+import javax.management.MBeanServerFactory;
 
-public class MetricsHandler implements HttpHandler {
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
-    private MetricRegistry registry;
-    private ExecutorService executor;
-    private ObjectMapper mapper;
+public class JVMMetricHandler implements HttpHandler {
 
-    public MetricsHandler(MetricRegistry registry) {
-        this(registry, null);
-    }
+    private final MetricRegistry registry;
+    private final MBeanServer server;
+    private final ObjectMapper mapper;
 
-    public MetricsHandler(MetricRegistry registry, ExecutorService executor) {
-        this.registry = registry;
-        this.executor = executor;
+    public JVMMetricHandler() {
+        this.registry = new MetricRegistry();
+        this.server = MBeanServerFactory.createMBeanServer();
 
         // As of right now we just pass in default values for the sampling and
         // duration of the Json Module, later we should make this configurable
         this.mapper = new ObjectMapper().registerModule(new MetricsModule(MILLISECONDS, MILLISECONDS, true));
+
+        registry.registerAll(new BufferPoolMetricSet(this.server));
+        registry.registerAll(new MemoryUsageGaugeSet());
+        registry.registerAll(new ThreadStatesGaugeSet());
+        registry.registerAll(new GarbageCollectorMetricSet());
     }
 
     @Override
