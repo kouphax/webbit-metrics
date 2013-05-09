@@ -4,7 +4,7 @@
 
 A [Metrics](http://metrics.codahale.com) backed [Webbit](http://webbitserver.org) Server for great good. __webbit-metrics__ acts as a companion server that can be run alongside other simple services.  This is heavily inspired by the approach that [Twitter](http://twitter.com) take with [Finagle](twitter.github.io/finagle/) and [Ostrich](https://github.com/twitter/ostrich)
 
-## Getting Started
+# AdminWebServer - Getting Started
 
 Lets assume we have a [Webbit](http://webbitserver.org) web server already.  Any sort of JVM based Web Server will do but [Webbit](http://webbitserver.org) ones give you a little bit more as we will see later. 
 
@@ -97,3 +97,14 @@ This example is horribly contrived but it serves its purpose.  Hitting [`http://
     }
     
 It will return an approximate HTTP Status code as well (`200 - OK` if everything is healthy, `500 - Internal Server Error` if these is something up and `501 - Not Implemented` if there are no registered healthchecks.
+
+## Ping
+
+
+## Thread Dump & JVM Metrics
+
+
+## Server Control
+
+
+# InstrumentedMiddleware - Getting Started
