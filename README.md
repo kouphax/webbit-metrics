@@ -117,3 +117,17 @@ If you pass in an instance of a [Webbit](http://webbitserver.org) server you hav
 ### Tasks
 
 ## InstrumentedMiddleware
+
+`InstrumentedMiddleware` is a Webbit handler that provides some basic metrics for requests.  Placing it at the head of your middleware stack for all requests in a [Webbit](http://webbitserver.org) will monitor the entire request chain
+
+    server.add(new InstrumentationMiddleware("my-lovely-greeter-service", admin.metrics));
+    server.add(...);
+    server.add(...);
+    server.add("/", new HttpHandler(){
+        @Override
+        public void handleHttpRequest(HttpRequest request, HttpResponse response, HttpControl control) throws Exception {
+            response.content("Hello World").end();
+        }
+    });
+
+You can optionally pass in a `handlerName` string as a first parameter and this will be appended to the instrumented metrics (useful if you have multiple handlers going to the same metrics registry)
