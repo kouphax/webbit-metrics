@@ -130,4 +130,6 @@ If you pass in an instance of a [Webbit](http://webbitserver.org) server you hav
         }
     });
 
-You can optionally pass in a `handlerName` string as a first parameter and this will be appended to the instrumented metrics (useful if you have multiple handlers going to the same metrics registry)
+You can optionally pass in a `handlerName` string as a first parameter and this will be appended to the instrumented metrics (useful if you have multiple handlers going to the same metrics registry).
+
+The following metrics are provided by `InstrumentedMiddleware`
