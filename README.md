@@ -37,4 +37,6 @@ By adding these lines we end up with another server running on port `9997` that 
 
 - Basic monitoring of the JVM & Threads
 - Ping service to check our service is reachable
-- Ability to `start`, `stop` & `restart` our service (passing the service is optional for non-[Webbit](http://webbitserver.org) services.
+- Ability to `start`, `stop` & `restart` our service (passing the service is optional for non-[Webbit](http://webbitserver.org) services).
+
+This service also exposes its own `HealthCheckRegistry` & `MetricRegistry` that can be used by your service to monitor the health of and collect valuable application & business metrics for your service.
