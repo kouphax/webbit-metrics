@@ -40,3 +40,60 @@ By adding these lines we end up with another server running on port `9997` that 
 - Ability to `start`, `stop` & `restart` our service (passing the service is optional for non-[Webbit](http://webbitserver.org) services).
 
 This service also exposes its own `HealthCheckRegistry` & `MetricRegistry` that can be used by your service to monitor the health of and collect valuable application & business metrics for your service.
+
+## Metrics
+
+When an `AdminWebServer` is created it will create its own instance of a `MetricRegistry` that can be accessed via `admin.metrics`.  So lets add some metrics to our service.
+
+    server.add("/", new HttpHandler(){
+        @Override
+        public void handleHttpRequest(HttpRequest request, HttpResponse response, HttpControl control) throws Exception {
+            admin.metrics.counter("hit-count").inc();
+            response.content("Hello World").end();
+        }
+    });
+    
+So we added `admin.metrics.counter("hit-count").inc();` which will increment the counter everytime someone hits that endpoint.  If we run the servers and go to [`http://localhost:9996`](http://localhost:9996) then [`http://localhost:9997/metrics`](http://127.0.0.1:9997/metrics) we should see a JSON response like this,
+
+    {
+    	version: "3.0.0",
+    	gauges: { },
+    	counters: {
+    		hit-count: {
+    			count: 1
+    		}
+    	},
+    	histograms: { },
+    	meters: { },
+    	timers: { }
+    }
+
+This is just a raw response from [Metrics](http://metrics.codahale.com), no need for any special sugar or transformation.  The `AdminWebServer` registry is a vanilla [Metrics](http://metrics.codahale.com) `MetricRegistry` and so supports all of [Metrics metrics](http://metrics.codahale.com/manual/core/) like [Gauges](http://metrics.codahale.com/manual/core/#gauges), [Counters](http://metrics.codahale.com/manual/core/#counters), [Histograms](http://metrics.codahale.com/manual/core/#histograms), [Meters](http://metrics.codahale.com/manual/core/#meters) and [Timers](http://metrics.codahale.com/manual/core/#timers).
+
+## Healthchecks
+
+If your service relies on a database connection or some external service to function then `HealthChecks` help monitor that these things are actually reachable and working as expected.  You can add a healthcheck to the registry easily,
+
+    admin.healthchecks.register("randomly-unhealthy", new HealthCheck() {
+        @Override
+        protected Result check() throws Exception {
+            final Boolean unhealthy = Math.random() < 0.5;
+            
+            if(unhealthy){
+                return Result.unhealthy("I've decided to have a sick day");
+            }
+            
+            return Result.healthy();
+        }
+    });
+    
+This example is horribly contrived but it serves its purpose.  Hitting [`http://localhost:9997/healthchecks`](http://127.0.0.1:9997/healthchecks) will run all registered healthchecks and return a JSON response,
+
+    {
+      randomly-unhealthy: {
+        healthy: false,
+        message: "I've decided to have a sick day"
+      }
+    }
+    
+It will return an approximate HTTP Status code as well (`200 - OK` if everything is healthy, `500 - Internal Server Error` if these is something up and `501 - Not Implemented` if there are no registered healthchecks.
