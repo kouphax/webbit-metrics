@@ -1,0 +1,221 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Webbit-metrics by kouphax</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Webbit-metrics</h1>
+        <p>Metrics meets Webbit</p>
+
+        <p class="view"><a href="https://github.com/kouphax/webbit-metrics">View the Project on GitHub <small>kouphax/webbit-metrics</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/kouphax/webbit-metrics/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/kouphax/webbit-metrics/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/kouphax/webbit-metrics">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>webbit-metrics</h1>
+
+<p><a href="https://travis-ci.org/kouphax/webbit-metrics"><img src="https://travis-ci.org/kouphax/webbit-metrics.png?branch=master" alt="Build Status"></a></p>
+
+<p>A <a href="http://metrics.codahale.com">Metrics</a> backed <a href="http://webbitserver.org">Webbit</a> Server for great good. <strong>webbit-metrics</strong> acts as a companion server that can be run alongside other simple services.  This is heavily inspired by the approach that <a href="http://twitter.com">Twitter</a> take with <a href="twitter.github.io/finagle/">Finagle</a> and <a href="https://github.com/twitter/ostrich">Ostrich</a></p>
+
+<h2>AdminWebServer</h2>
+
+<p>Lets assume we have a <a href="http://webbitserver.org">Webbit</a> web server already.  Any sort of JVM based Web Server will do but <a href="http://webbitserver.org">Webbit</a> ones give you a little bit more as we will see later. </p>
+
+<pre><code>import org.webbitserver.*;
+import org.webbitserver.netty.NettyWebServer;
+
+public class MyLovelyGreeterService {
+    public static void main(String[] args) throws Exception {
+
+        final NettyWebServer server = new NettyWebServer(9996);
+
+        server.add("/", new HttpHandler(){
+            @Override
+            public void handleHttpRequest(HttpRequest request, HttpResponse response, HttpControl control) throws Exception {
+                response.content("Hello World").end();
+            }
+        });
+
+        server.start().get();
+        System.out.println("Server listening on port " + 9996);
+    }
+}
+</code></pre>
+
+<p>If we want to monitor or instrument this service we can create an instance of an <code>AdminWebServer</code> that can run alongside it and collect metrics that our service generates.</p>
+
+<pre><code>final AdminWebServer admin = new AdminWebServer(server, 9997);
+admin.start().get();
+</code></pre>
+
+<p>By adding these lines we end up with another server running on port <code>9997</code> that gives us,</p>
+
+<ul>
+<li>Basic monitoring of the JVM &amp; Threads</li>
+<li>Ping service to check our service is reachable</li>
+<li>Ability to <code>start</code>, <code>stop</code> &amp; <code>restart</code> our service (passing the service is optional for non-<a href="http://webbitserver.org">Webbit</a> services).</li>
+</ul><p>This service also exposes its own <code>HealthCheckRegistry</code> &amp; <code>MetricRegistry</code> that can be used by your service to monitor the health of and collect valuable application &amp; business metrics for your service.</p>
+
+<h3>Metrics</h3>
+
+<p>When an <code>AdminWebServer</code> is created it will create its own instance of a <code>MetricRegistry</code> that can be accessed via <code>admin.metrics</code>.  So lets add some metrics to our service.</p>
+
+<pre><code>server.add("/", new HttpHandler(){
+    @Override
+    public void handleHttpRequest(HttpRequest request, HttpResponse response, HttpControl control) throws Exception {
+        admin.metrics.counter("hit-count").inc();
+        response.content("Hello World").end();
+    }
+});
+</code></pre>
+
+<p>So we added <code>admin.metrics.counter("hit-count").inc();</code> which will increment the counter everytime someone hits that endpoint.  If we run the servers and go to <a href="http://localhost:9996"><code>http://localhost:9996</code></a> then <a href="http://127.0.0.1:9997/metrics"><code>http://localhost:9997/metrics</code></a> we should see a JSON response like this,</p>
+
+<pre><code>{
+    version: "3.0.0",
+    gauges: { },
+    counters: {
+        hit-count: {
+            count: 1
+        }
+    },
+    histograms: { },
+    meters: { },
+    timers: { }
+}
+</code></pre>
+
+<p>This is just a raw response from <a href="http://metrics.codahale.com">Metrics</a>, no need for any special sugar or transformation.  The <code>AdminWebServer</code> registry is a vanilla <a href="http://metrics.codahale.com">Metrics</a> <code>MetricRegistry</code> and so supports all of <a href="http://metrics.codahale.com/manual/core/">Metrics metrics</a> like <a href="http://metrics.codahale.com/manual/core/#gauges">Gauges</a>, <a href="http://metrics.codahale.com/manual/core/#counters">Counters</a>, <a href="http://metrics.codahale.com/manual/core/#histograms">Histograms</a>, <a href="http://metrics.codahale.com/manual/core/#meters">Meters</a> and <a href="http://metrics.codahale.com/manual/core/#timers">Timers</a>.</p>
+
+<h3>Healthchecks</h3>
+
+<p>If your service relies on a database connection or some external service to function then <code>HealthChecks</code> help monitor that these things are actually reachable and working as expected.  You can add a healthcheck to the registry easily,</p>
+
+<pre><code>admin.healthchecks.register("randomly-unhealthy", new HealthCheck() {
+    @Override
+    protected Result check() throws Exception {
+        final Boolean unhealthy = Math.random() &lt; 0.5;
+
+        if(unhealthy){
+            return Result.unhealthy("I've decided to have a sick day");
+        }
+
+        return Result.healthy();
+    }
+});
+</code></pre>
+
+<p>This example is horribly contrived but it serves its purpose.  Hitting <a href="http://127.0.0.1:9997/healthchecks"><code>http://localhost:9997/healthchecks</code></a> will run all registered healthchecks and return a JSON response,</p>
+
+<pre><code>{
+  randomly-unhealthy: {
+    healthy: false,
+    message: "I've decided to have a sick day"
+  }
+}
+</code></pre>
+
+<p>It will return an approximate HTTP Status code as well (<code>200 - OK</code> if everything is healthy, <code>500 - Internal Server Error</code> if these is something up and <code>501 - Not Implemented</code> if there are no registered healthchecks.</p>
+
+<h3>Ping</h3>
+
+<p>Hitting <a href="http://127.0.0.1:9997/ping"><code>http://localhost:9997/ping</code></a> will simply return a <code>200 - OK</code> response with plain text body containing <code>pong</code>.  This is useful in situations where you want to know if a machine or service is actually still around and reachable</p>
+
+<h3>Thread Dump &amp; JVM Metrics</h3>
+
+<p><a href="http://127.0.0.1:9997/jvm"><code>http://localhost:9997/jvm</code></a> &amp; <a href="http://127.0.0.1:9997/dump"><code>http://localhost:9997/dump</code></a> will give you some JVM metrics and Thread Dumps respectivley.</p>
+
+<h3>Server Control</h3>
+
+<p>If you pass in an instance of a <a href="http://webbitserver.org">Webbit</a> server you have some control over the running of that service. </p>
+
+<ul>
+<li>
+<a href="http://127.0.0.1:9997/start"><code>/start</code></a> - Starts the service.  Throws if the service is already started.</li>
+<li>
+<a href="http://127.0.0.1:9997/stop"><code>/stop</code></a> - Stops the service.</li>
+<li>
+<a href="http://127.0.0.1:9997/restart"><code>/restart</code></a> - Stops and then Starts the service.</li>
+</ul><h3>Tasks</h3>
+
+<h2>InstrumentedMiddleware</h2>
+
+<p><code>InstrumentedMiddleware</code> is a Webbit handler that provides some basic metrics for requests.  Placing it at the head of your middleware stack for all requests in a <a href="http://webbitserver.org">Webbit</a> will monitor the entire request chain</p>
+
+<pre><code>server.add(new InstrumentationMiddleware("my-lovely-greeter-service", admin.metrics));
+server.add(...);
+server.add(...);
+server.add("/", new HttpHandler(){
+    @Override
+    public void handleHttpRequest(HttpRequest request, HttpResponse response, HttpControl control) throws Exception {
+        response.content("Hello World").end();
+    }
+});
+</code></pre>
+
+<p>You can optionally pass in a <code>handlerName</code> string as a first parameter and this will be appended to the instrumented metrics (useful if you have multiple handlers going to the same metrics registry).</p>
+
+<p>The following metrics are provided by <code>InstrumentedMiddleware</code></p>
+
+<ul>
+<li>
+<code>active-request</code> counter - number of currently active requests</li>
+<li>Meters for HTTP statuses
+
+<ul>
+<li>
+<code>status.badRequest</code> (HTTP Status 400)</li>
+<li>
+<code>status.created</code> (HTTP Status 201)</li>
+<li>
+<code>status.noContent</code> (HTTP Status 204)</li>
+<li>
+<code>status.notFound</code> (HTTP Status 404)</li>
+<li>
+<code>status.ok</code> (HTTP Status 200)</li>
+<li>
+<code>status.serverError</code> (HTTP Status 500)</li>
+<li>
+<code>status.</code> (All other HTTP Statuses)</li>
+</ul>
+</li>
+<li>
+<code>request</code> timer - time based stats for request processing time</li>
+</ul><p>These will be available under <a href="http://localhost:9996/metrics">/metrics</a>.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/kouphax">kouphax</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-19143623-16");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
