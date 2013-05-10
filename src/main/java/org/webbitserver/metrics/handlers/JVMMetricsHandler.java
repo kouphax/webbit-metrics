@@ -17,13 +17,13 @@ import javax.management.MBeanServerFactory;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
-public class JVMMetricHandler implements HttpHandler {
+public class JVMMetricsHandler implements HttpHandler {
 
     private final MetricRegistry registry;
     private final MBeanServer server;
     private final ObjectMapper mapper;
 
-    public JVMMetricHandler() {
+    public JVMMetricsHandler() {
         this.registry = new MetricRegistry();
         this.server = MBeanServerFactory.createMBeanServer();
 

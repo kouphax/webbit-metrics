@@ -12,8 +12,7 @@ import org.webbitserver.stub.StubHttpResponse;
 
 import java.util.concurrent.Executors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.fest.assertions.api.Assertions.*;
 
 @RunWith(JUnit4.class)
 public class HealthCheckHandlerTest {
@@ -31,35 +30,24 @@ public class HealthCheckHandlerTest {
 
     @Test
     public void returnsNotImplementedStatusWhenNoHealthChecksAdded() throws Exception {
-
         handler.handleHttpRequest(new StubHttpRequest(), response, new StubHttpControl());
-
-        assertEquals(501, response.status());
-        assertEquals("application/json", response.header("Content-Type"));
-        assertTrue(response.ended());
+        assertCompleteJSONResponse(501, null);
     }
 
     @Test
     public void returnsSuccessAndResponseBodyWhenAllHealthChecksPass() throws Exception {
-
         registry.register("always-passes", new HealthCheck() {
             @Override
             protected Result check() throws Exception {
                 return Result.healthy();
             }
         });
-
         handler.handleHttpRequest(new StubHttpRequest(), response, new StubHttpControl());
-
-        assertEquals(200, response.status());
-        assertEquals("application/json", response.header("Content-Type"));
-        assertEquals("{\"always-passes\":{\"healthy\":true}}", response.contentsString());
-        assertTrue(response.ended());
+        assertCompleteJSONResponse(200, "{\"always-passes\":{\"healthy\":true}}");
     }
 
     @Test
     public void returnsServerErrorAndResponseBodyWhenAHealthCheckFails() throws Exception {
-
         registry.register("always-fails", new HealthCheck() {
             @Override
             protected Result check() throws Exception {
@@ -72,12 +60,16 @@ public class HealthCheckHandlerTest {
                 return Result.healthy();
             }
         });
-
         handler.handleHttpRequest(new StubHttpRequest(), response, new StubHttpControl());
+        assertCompleteJSONResponse(500, "{\"always-fails\":{\"healthy\":false,\"message\":\"failed\"},\"always-passes\":{\"healthy\":true}}");
+    }
 
-        assertEquals(500, response.status());
-        assertEquals("application/json", response.header("Content-Type"));
-        assertEquals("{\"always-fails\":{\"healthy\":false,\"message\":\"failed\"},\"always-passes\":{\"healthy\":true}}", response.contentsString());
-        assertTrue(response.ended());
+    private void assertCompleteJSONResponse(int status, String body) {
+        assertThat(response.status()).isEqualTo(status);
+        assertThat(response.header("Content-Type")).isEqualTo("application/json");
+        assertThat(response.ended()).isTrue();
+        if(body != null) {
+            assertThat(response.contentsString()).isEqualTo(body);
+        }
     }
 }
