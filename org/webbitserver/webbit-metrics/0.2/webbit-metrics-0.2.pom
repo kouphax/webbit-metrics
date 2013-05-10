@@ -101,7 +101,6 @@
                 <version>2.7</version>
                 <configuration>
                     <altDeploymentRepository>internal.repo::default::file://${project.build.directory}/mvn</altDeploymentRepository>
-                    <sources>${sources}</sources>
                 </configuration>
             </plugin>
             <plugin>
