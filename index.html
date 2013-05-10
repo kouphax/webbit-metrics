@@ -34,6 +34,39 @@
 
 <p>A <a href="http://metrics.codahale.com">Metrics</a> backed <a href="http://webbitserver.org">Webbit</a> Server for great good. <strong>webbit-metrics</strong> acts as a companion server that can be run alongside other simple services.  This is heavily inspired by the approach that <a href="http://twitter.com">Twitter</a> take with <a href="twitter.github.io/finagle/">Finagle</a> and <a href="https://github.com/twitter/ostrich">Ostrich</a></p>
 
+<h2>Getting It</h2>
+
+<h3>Maven</h3>
+
+<p>Repository</p>
+
+<pre><code>&lt;repository&gt;
+    &lt;id&gt;webbit-metrics-repo&lt;/id&gt;
+    &lt;url&gt;https://raw.github.com/kouphax/webbit-metrics/mvn/&lt;/url&gt;
+&lt;/repository&gt;
+</code></pre>
+
+<p>Dependency</p>
+
+<pre><code>&lt;dependency&gt;
+  &lt;groupId&gt;org.webbitserver&lt;/groupId&gt;
+  &lt;artifactId&gt;webbit-metrics&lt;/artifactId&gt;
+  &lt;version&gt;0.2-SNAPSHOT&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<h3>SBT</h3>
+
+<p>Resolver</p>
+
+<pre><code>"webbit-metrics" at "https://raw.github.com/kouphax/webbit-metrics/mvn/"
+</code></pre>
+
+<p>Dependency</p>
+
+<pre><code>"org.webbitserver" % "webbit-metrics" % "0.2-SNAPSHOT"
+</code></pre>
+
 <h2>AdminWebServer</h2>
 
 <p>Lets assume we have a <a href="http://webbitserver.org">Webbit</a> web server already.  Any sort of JVM based Web Server will do but <a href="http://webbitserver.org">Webbit</a> ones give you a little bit more as we will see later. </p>
