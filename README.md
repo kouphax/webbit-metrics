@@ -116,6 +116,19 @@ If you pass in an instance of a [Webbit](http://webbitserver.org) server you hav
 
 ### Tasks
 
+Tasks are arbitrary bits of code that can be run at any time from your `AdminWebServer` instance.  You can register as `Task` against the `TaskRegistry` instance created along with your `AdminWebServer` instance.
+
+    admin.tasks.register("seed-database", new Task() {
+        @Override
+        public void execute() throws Exception {
+            // seed the database with some data
+        }
+    });
+    
+Browsing to [/tasks](http://localhost:9997/tasks) will list available tasks and passing a `name` parameter in the querystring of a task will run that task e.g. [/tasks?name=seed-database](http://localhost:9997/tasks?name=seed-database).
+
+Any exceptions thrown in the course of running a task will be piped out to the browser.
+
 ## InstrumentedMiddleware
 
 `InstrumentedMiddleware` is a Webbit handler that provides some basic metrics for requests.  Placing it at the head of your middleware stack for all requests in a [Webbit](http://webbitserver.org) will monitor the entire request chain
