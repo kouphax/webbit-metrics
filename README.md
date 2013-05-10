@@ -133,3 +133,16 @@ If you pass in an instance of a [Webbit](http://webbitserver.org) server you hav
 You can optionally pass in a `handlerName` string as a first parameter and this will be appended to the instrumented metrics (useful if you have multiple handlers going to the same metrics registry).
 
 The following metrics are provided by `InstrumentedMiddleware`
+
+- `active-request` counter - number of currently active requests
+- Meters for HTTP statuses
+  - `status.badRequest` (HTTP Status 400)
+  - `status.created` (HTTP Status 201)
+  - `status.noContent` (HTTP Status 204)
+  - `status.notFound` (HTTP Status 404)
+  - `status.ok` (HTTP Status 200)
+  - `status.serverError` (HTTP Status 500)
+  - `status.` (All other HTTP Statuses)
+- `request` timer - time based stats for request processing time
+
+These will be available under [/metrics](http://localhost:9996/metrics).
