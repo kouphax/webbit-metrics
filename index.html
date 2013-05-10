@@ -155,6 +155,20 @@ admin.start().get();
 <a href="http://127.0.0.1:9997/restart"><code>/restart</code></a> - Stops and then Starts the service.</li>
 </ul><h3>Tasks</h3>
 
+<p>Tasks are arbitrary bits of code that can be run at any time from your <code>AdminWebServer</code> instance.  You can register as <code>Task</code> against the <code>TaskRegistry</code> instance created along with your <code>AdminWebServer</code> instance.</p>
+
+<pre><code>admin.tasks.register("seed-database", new Task() {
+    @Override
+    public void execute() throws Exception {
+        // seed the database with some data
+    }
+});
+</code></pre>
+
+<p>Browsing to <a href="http://localhost:9997/tasks">/tasks</a> will list available tasks and passing a <code>name</code> parameter in the querystring of a task will run that task e.g. <a href="http://localhost:9997/tasks?name=seed-database">/tasks?name=seed-database</a>.</p>
+
+<p>Any exceptions thrown in the course of running a task will be piped out to the browser.</p>
+
 <h2>InstrumentedMiddleware</h2>
 
 <p><code>InstrumentedMiddleware</code> is a Webbit handler that provides some basic metrics for requests.  Placing it at the head of your middleware stack for all requests in a <a href="http://webbitserver.org">Webbit</a> will monitor the entire request chain</p>
