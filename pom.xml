@@ -13,7 +13,17 @@
     <properties>
         <metrics.version>3.0.0-BETA2</metrics.version>
         <jackson.version>2.1.4</jackson.version>
+        <github.global.server>github</github.global.server>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub ${project.artifactId} Repository</name>
+            <url>https://raw.github.com/kouphax/${project.artifactId}/mvn</url>
+        </repository>
+    </distributionManagement>
 
     <dependencies>
         <dependency>
@@ -73,7 +83,6 @@
                 <version>2.14</version>
                 <configuration>
                     <includes>
-                        <include>**/*Spec.*</include>
                         <include>**/*Test.*</include>
                     </includes>
                 </configuration>
@@ -86,6 +95,51 @@
                     <source>1.7</source>
                     <target>1.7</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <altDeploymentRepository>internal.repo::default::file://${project.build.directory}/mvn</altDeploymentRepository>
+                    <sources>${sources}</sources>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.1.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.github.github</groupId>
+                <artifactId>site-maven-plugin</artifactId>
+                <version>0.8</version>
+                <configuration>
+                    <merge>true</merge>
+                    <message>Maven artifacts for ${project.version}</message>
+                    <noJekyll>true</noJekyll>
+                    <outputDirectory>${project.build.directory}/mvn</outputDirectory>
+                    <branch>refs/heads/mvn</branch>
+                    <includes>
+                        <include>**/*</include>
+                    </includes>
+                    <repositoryName>webbit-metrics</repositoryName>
+                    <repositoryOwner>kouphax</repositoryOwner>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>site</goal>
+                        </goals>
+                        <phase>deploy</phase>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
