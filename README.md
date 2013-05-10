@@ -8,11 +8,15 @@ A [Metrics](http://metrics.codahale.com) backed [Webbit](http://webbitserver.org
 
 ### Maven
 
+Repository
+
     <repository>
         <id>webbit-metrics-repo</id>
         <url>https://raw.github.com/kouphax/webbit-metrics/mvn/</url>
     </repository>
-    
+
+Dependency
+
     <dependency>
       <groupId>org.webbitserver</groupId>
       <artifactId>webbit-metrics</artifactId>
