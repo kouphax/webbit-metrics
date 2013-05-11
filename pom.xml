@@ -5,7 +5,7 @@
     <groupId>org.webbitserver</groupId>
     <artifactId>webbit-metrics</artifactId>
     <packaging>jar</packaging>
-    <version>0.2</version>
+    <version>0.2.1</version>
 
     <name>webbit-metrics</name>
     <url>http://maven.apache.org</url>
@@ -111,6 +111,18 @@
                     <execution>
                         <goals>
                             <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
                         </goals>
                     </execution>
                 </executions>
