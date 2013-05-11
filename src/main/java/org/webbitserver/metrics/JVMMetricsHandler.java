@@ -1,4 +1,4 @@
-package org.webbitserver.metrics.handlers;
+package org.webbitserver.metrics;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.json.MetricsModule;
@@ -17,7 +17,7 @@ import javax.management.MBeanServerFactory;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
-public class JVMMetricsHandler implements HttpHandler {
+class JVMMetricsHandler implements HttpHandler {
 
     private final MetricRegistry registry;
     private final MBeanServer server;

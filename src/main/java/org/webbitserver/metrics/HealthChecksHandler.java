@@ -1,4 +1,4 @@
-package org.webbitserver.metrics.handlers;
+package org.webbitserver.metrics;
 
 import com.codahale.metrics.health.HealthCheck;
 import com.codahale.metrics.health.HealthCheckRegistry;
@@ -39,7 +39,7 @@ import java.util.concurrent.ExecutorService;
  * }
  * </pre>
  */
-public class HealthChecksHandler implements HttpHandler {
+class HealthChecksHandler implements HttpHandler {
 
     private HealthCheckRegistry registry;
     private ExecutorService executor;

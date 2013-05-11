@@ -1,4 +1,4 @@
-package org.webbitserver.metrics.handlers;
+package org.webbitserver.metrics;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.json.MetricsModule;
@@ -12,7 +12,7 @@ import java.util.concurrent.ExecutorService;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
-public class MetricsHandler implements HttpHandler {
+class MetricsHandler implements HttpHandler {
 
     private MetricRegistry registry;
     private ExecutorService executor;

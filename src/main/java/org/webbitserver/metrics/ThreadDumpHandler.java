@@ -1,4 +1,4 @@
-package org.webbitserver.metrics.handlers;
+package org.webbitserver.metrics;
 
 import com.codahale.metrics.jvm.ThreadDump;
 import org.webbitserver.HttpControl;
@@ -9,7 +9,7 @@ import org.webbitserver.HttpResponse;
 import java.io.ByteArrayOutputStream;
 import java.lang.management.ManagementFactory;
 
-public class ThreadDumpHandler implements HttpHandler {
+class ThreadDumpHandler implements HttpHandler {
 
     ThreadDump dumper;
 

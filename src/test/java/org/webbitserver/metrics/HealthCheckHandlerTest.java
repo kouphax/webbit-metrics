@@ -1,4 +1,4 @@
-package org.webbitserver.metrics.handlers;
+package org.webbitserver.metrics;
 
 import com.codahale.metrics.health.HealthCheck;
 import com.codahale.metrics.health.HealthCheckRegistry;
@@ -12,7 +12,7 @@ import org.webbitserver.stub.StubHttpResponse;
 
 import java.util.concurrent.Executors;
 
-import static org.fest.assertions.api.Assertions.*;
+import static org.fest.assertions.api.Assertions.assertThat;
 
 @RunWith(JUnit4.class)
 public class HealthCheckHandlerTest {

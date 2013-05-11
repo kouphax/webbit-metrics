@@ -1,4 +1,4 @@
-package org.webbitserver.metrics.handlers;
+package org.webbitserver.metrics;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

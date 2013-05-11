@@ -1,4 +1,4 @@
-package org.webbitserver.metrics.handlers;
+package org.webbitserver.metrics;
 
 import org.webbitserver.HttpControl;
 import org.webbitserver.HttpHandler;
@@ -10,7 +10,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.NoSuchElementException;
 
-public class TasksHandler implements HttpHandler {
+class TasksHandler implements HttpHandler {
 
     private final TaskRegistry registry;
 

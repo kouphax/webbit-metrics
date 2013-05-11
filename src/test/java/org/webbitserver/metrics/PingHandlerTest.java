@@ -1,4 +1,4 @@
-package org.webbitserver.metrics.handlers;
+package org.webbitserver.metrics;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -6,20 +6,20 @@ import org.junit.runners.JUnit4;
 import org.webbitserver.stub.StubHttpControl;
 import org.webbitserver.stub.StubHttpRequest;
 import org.webbitserver.stub.StubHttpResponse;
-import static org.fest.assertions.api.Assertions.*;
 
+import static org.junit.Assert.assertEquals;
 
 @RunWith(JUnit4.class)
-public class ThreadDumpHandlerTest {
+public class PingHandlerTest {
 
     @Test
-    public void willReturnSomethingForAllRequests() throws Exception {
-        ThreadDumpHandler handler = new ThreadDumpHandler();
+    public void willReturnPongForAllRequests() throws Exception {
+        PingHandler handler = new PingHandler();
         StubHttpResponse response = new StubHttpResponse();
 
         handler.handleHttpRequest(new StubHttpRequest(), response, new StubHttpControl());
 
-        assertThat(response.contentsString()).isNotEmpty();
-        assertThat(response.status()).isEqualTo(200);
+        assertEquals("pong", response.contentsString());
+        assertEquals(200, response.status());
     }
 }
