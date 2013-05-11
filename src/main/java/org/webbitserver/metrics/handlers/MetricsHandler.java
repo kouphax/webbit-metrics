@@ -9,7 +9,8 @@ import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
 
 import java.util.concurrent.ExecutorService;
-import static java.util.concurrent.TimeUnit.*;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class MetricsHandler implements HttpHandler {
 

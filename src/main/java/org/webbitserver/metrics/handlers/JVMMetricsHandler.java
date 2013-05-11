@@ -15,7 +15,7 @@ import org.webbitserver.HttpResponse;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class JVMMetricsHandler implements HttpHandler {
 
@@ -29,7 +29,7 @@ public class JVMMetricsHandler implements HttpHandler {
 
         // As of right now we just pass in default values for the sampling and
         // duration of the Json Module, later we should make this configurable
-        this.mapper = new ObjectMapper().registerModule(new MetricsModule(MILLISECONDS, MILLISECONDS, true));
+        this.mapper = new ObjectMapper().registerModule(new MetricsModule(SECONDS, SECONDS, true));
 
         registry.registerAll(new BufferPoolMetricSet(this.server));
         registry.registerAll(new MemoryUsageGaugeSet());

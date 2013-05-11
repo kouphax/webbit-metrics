@@ -1,6 +1,9 @@
 package org.webbitserver.metrics.registries;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.NoSuchElementException;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 

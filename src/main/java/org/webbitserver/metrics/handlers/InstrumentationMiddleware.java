@@ -12,6 +12,47 @@ import org.webbitserver.HttpResponse;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+/**
+ * InstrumentedMiddleware is a Webbit handler that provides some basic metrics
+ * for requests. Placing it at the head of your middleware stack for all
+ * requests in a Webbit will monitor the entire request chain.
+ *
+ * <pre>
+ * {@code
+ *      server.add(new InstrumentationMiddleware("my-lovely-greeter-service", admin.metrics));
+ *      server.add(...);
+ *      server.add(...);
+ *      server.add("/", new HttpHandler(){
+ *          @Override
+ *          public void handleHttpRequest(HttpRequest request, HttpResponse response, HttpControl control) throws Exception {
+ *              response.content("Hello World").end();
+ *          }
+ *      });
+ * }
+ * </pre>
+ *
+ * You can optionally pass in a handlerName string as a first parameter and
+ * this will be appended to the instrumented metrics (useful if you have
+ * multiple handlers going to the same metrics registry).
+ *
+ * The following metrics are provided by InstrumentedMiddleware
+ *
+ * <ul>
+ *  <li>{@code active-request} counter - number of currently active requests</li>
+ *  <li>Meters for HTTP statuses
+ *      <ul>
+ *          <li>{@code status.badRequest} (HTTP Status 400)</li>
+ *          <li>{@code status.created} (HTTP Status 201)</li>
+ *          <li>{@code status.noContent} (HTTP Status 204)</li>
+ *          <li>{@code status.notFound} (HTTP Status 404)</li>
+ *          <li>{@code status.ok} (HTTP Status 200)</li>
+ *          <li>{@code status.serverError} (HTTP Status 500)</li>
+ *          <li>{@code status.other} (All other HTTP Statuses)</li>
+ *      </ul>
+ *  </li>
+ *  <li>{@code request} timer - time based stats for request processing time</li>
+ * </ul>
+ */
 public class InstrumentationMiddleware implements HttpHandler {
 
     private final ConcurrentMap<Integer, Meter> statusCodeMeters;

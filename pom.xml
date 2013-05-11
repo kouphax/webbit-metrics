@@ -5,7 +5,7 @@
     <groupId>org.webbitserver</groupId>
     <artifactId>webbit-metrics</artifactId>
     <packaging>jar</packaging>
-    <version>0.2.1</version>
+    <version>0.2.2-SNAPSHOT</version>
 
     <name>webbit-metrics</name>
     <url>http://maven.apache.org</url>

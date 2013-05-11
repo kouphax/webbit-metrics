@@ -21,6 +21,10 @@ public class TasksHandler implements HttpHandler {
     @Override
     public void handleHttpRequest(HttpRequest request, HttpResponse response, HttpControl control) throws Exception {
         String name = request.queryParam("name");
+
+        // attempt to stop caching
+        response.header("Cache-Control", "must-revalidate,no-cache,no-store");
+
         if(name == null) {
             renderTaskList(response);
         } else {

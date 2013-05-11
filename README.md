@@ -22,46 +22,46 @@ Dependency
       <artifactId>webbit-metrics</artifactId>
       <version>0.2-SNAPSHOT</version>
     </dependency>
-    
+
 ### SBT
 
 Resolver
 
 	"webbit-metrics" at "https://raw.github.com/kouphax/webbit-metrics/mvn/"
-    
+
 Dependency
 
     "org.webbitserver" % "webbit-metrics" % "0.2-SNAPSHOT"
 
 ## AdminWebServer
 
-Lets assume we have a [Webbit](http://webbitserver.org) web server already.  Any sort of JVM based Web Server will do but [Webbit](http://webbitserver.org) ones give you a little bit more as we will see later. 
+Lets assume we have a [Webbit](http://webbitserver.org) web server already.  Any sort of JVM based Web Server will do but [Webbit](http://webbitserver.org) ones give you a little bit more as we will see later.
 
     import org.webbitserver.*;
     import org.webbitserver.netty.NettyWebServer;
-    
+
     public class MyLovelyGreeterService {
         public static void main(String[] args) throws Exception {
-    
+
             final NettyWebServer server = new NettyWebServer(9996);
-    
+
             server.add("/", new HttpHandler(){
                 @Override
                 public void handleHttpRequest(HttpRequest request, HttpResponse response, HttpControl control) throws Exception {
                     response.content("Hello World").end();
                 }
             });
-    
+
             server.start().get();
             System.out.println("Server listening on port " + 9996);
         }
     }
-    
+
 If we want to monitor or instrument this service we can create an instance of an `AdminWebServer` that can run alongside it and collect metrics that our service generates.
 
 	final AdminWebServer admin = new AdminWebServer(server, 9997);
     admin.start().get();
-    
+
 By adding these lines we end up with another server running on port `9997` that gives us,
 
 - Basic monitoring of the JVM & Threads
@@ -81,7 +81,7 @@ When an `AdminWebServer` is created it will create its own instance of a `Metric
             response.content("Hello World").end();
         }
     });
-    
+
 So we added `admin.metrics.counter("hit-count").inc();` which will increment the counter everytime someone hits that endpoint.  If we run the servers and go to [`http://localhost:9996`](http://localhost:9996) then [`http://localhost:9997/metrics`](http://127.0.0.1:9997/metrics) we should see a JSON response like this,
 
     {
@@ -107,15 +107,15 @@ If your service relies on a database connection or some external service to func
         @Override
         protected Result check() throws Exception {
             final Boolean unhealthy = Math.random() < 0.5;
-            
+
             if(unhealthy){
                 return Result.unhealthy("I've decided to have a sick day");
             }
-            
+
             return Result.healthy();
         }
     });
-    
+
 This example is horribly contrived but it serves its purpose.  Hitting [`http://localhost:9997/healthchecks`](http://127.0.0.1:9997/healthchecks) will run all registered healthchecks and return a JSON response,
 
     {
@@ -124,7 +124,7 @@ This example is horribly contrived but it serves its purpose.  Hitting [`http://
         message: "I've decided to have a sick day"
       }
     }
-    
+
 It will return an approximate HTTP Status code as well (`200 - OK` if everything is healthy, `500 - Internal Server Error` if these is something up and `501 - Not Implemented` if there are no registered healthchecks.
 
 ### Ping
@@ -137,7 +137,7 @@ Hitting [`http://localhost:9997/ping`](http://127.0.0.1:9997/ping) will simply r
 
 ### Server Control
 
-If you pass in an instance of a [Webbit](http://webbitserver.org) server you have some control over the running of that service. 
+If you pass in an instance of a [Webbit](http://webbitserver.org) server you have some control over the running of that service.
 
 - [`/start`](http://127.0.0.1:9997/start) - Starts the service.  Throws if the service is already started.
 - [`/stop`](http://127.0.0.1:9997/stop) - Stops the service.
@@ -153,7 +153,7 @@ Tasks are arbitrary bits of code that can be run at any time from your `AdminWeb
             // seed the database with some data
         }
     });
-    
+
 Browsing to [/tasks](http://localhost:9997/tasks) will list available tasks and passing a `name` parameter in the querystring of a task will run that task e.g. [/tasks?name=seed-database](http://localhost:9997/tasks?name=seed-database).
 
 Any exceptions thrown in the course of running a task will be piped out to the browser.
@@ -184,7 +184,7 @@ The following metrics are provided by `InstrumentedMiddleware`
   - `status.notFound` (HTTP Status 404)
   - `status.ok` (HTTP Status 200)
   - `status.serverError` (HTTP Status 500)
-  - `status.` (All other HTTP Statuses)
+  - `status.other` (All other HTTP Statuses)
 - `request` timer - time based stats for request processing time
 
 These will be available under [/metrics](http://localhost:9996/metrics).

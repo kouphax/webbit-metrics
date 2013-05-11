@@ -13,6 +13,32 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.concurrent.ExecutorService;
 
+/**
+ * Handler responsible for running any registered HealthChecks.  Returns a JSON
+ * response that is dependent on the status of health checks,
+ *
+ * <ul>
+ *     <li><code>200/OK</code> if all HealthChecks are Healthy</li>
+ *     <li><code>500/InternalServerError</code> if any HealthCheck fails</li>
+ *     <li><code>501/NotImplemented</code> if no HealthChecks are registered</li>
+ * </ul>
+ *
+ * All results return a JSON body of HealthCheck results
+ *
+ * <pre>
+ * {@code
+ * {
+ *     "database-connection": {
+ *         "healthy": true
+ *     },
+ *     "external-service-ping": {
+ *         "healthy": false,
+ *         "message": "Can't reach external service"
+ *     }
+ * }
+ * }
+ * </pre>
+ */
 public class HealthChecksHandler implements HttpHandler {
 
     private HealthCheckRegistry registry;
