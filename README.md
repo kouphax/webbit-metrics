@@ -36,7 +36,7 @@ Dependency
 
 ## AdminWebServer
 
-Lets assume we have a [Webbit](http://webbitserver.org) web server already.  Any sort of JVM based Web Server will do but [Webbit](http://webbitserver.org) ones give you a little bit more as we will see later.
+Lets assume we have a [Webbit](http://webbitserver.org) web server already.
 
     import org.webbitserver.*;
     import org.webbitserver.netty.NettyWebServer;
@@ -60,14 +60,13 @@ Lets assume we have a [Webbit](http://webbitserver.org) web server already.  Any
 
 If we want to monitor or instrument this service we can create an instance of an `AdminWebServer` that can run alongside it and collect metrics that our service generates.
 
-	final AdminWebServer admin = new AdminWebServer(server, 9997);
+	final AdminWebServer admin = new AdminWebServer(9997);
     admin.start().get();
 
 By adding these lines we end up with another server running on port `9997` that gives us,
 
 - Basic monitoring of the JVM & Threads
 - Ping service to check our service is reachable
-- Ability to `start`, `stop` & `restart` our service (passing the service is optional for non-[Webbit](http://webbitserver.org) services).
 
 This service also exposes its own `HealthCheckRegistry` & `MetricRegistry` that can be used by your service to monitor the health of and collect valuable application & business metrics for your service.
 
@@ -135,14 +134,6 @@ Hitting [`http://localhost:9997/ping`](http://127.0.0.1:9997/ping) will simply r
 ### Thread Dump & JVM Metrics
 
 [`http://localhost:9997/jvm`](http://127.0.0.1:9997/jvm) & [`http://localhost:9997/dump`](http://127.0.0.1:9997/dump) will give you some JVM metrics and Thread Dumps respectivley.
-
-### Server Control
-
-If you pass in an instance of a [Webbit](http://webbitserver.org) server you have some control over the running of that service.
-
-- [`/start`](http://127.0.0.1:9997/start) - Starts the service.  Throws if the service is already started.
-- [`/stop`](http://127.0.0.1:9997/stop) - Stops the service.
-- [`/restart`](http://127.0.0.1:9997/restart) - Stops and then Starts the service.
 
 ### Tasks
 
