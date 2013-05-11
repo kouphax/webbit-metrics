@@ -69,7 +69,7 @@
 
 <h2>AdminWebServer</h2>
 
-<p>Lets assume we have a <a href="http://webbitserver.org">Webbit</a> web server already.  Any sort of JVM based Web Server will do but <a href="http://webbitserver.org">Webbit</a> ones give you a little bit more as we will see later.</p>
+<p>Lets assume we have a <a href="http://webbitserver.org">Webbit</a> web server already.</p>
 
 <pre><code>import org.webbitserver.*;
 import org.webbitserver.netty.NettyWebServer;
@@ -94,7 +94,7 @@ public class MyLovelyGreeterService {
 
 <p>If we want to monitor or instrument this service we can create an instance of an <code>AdminWebServer</code> that can run alongside it and collect metrics that our service generates.</p>
 
-<pre><code>final AdminWebServer admin = new AdminWebServer(server, 9997);
+<pre><code>final AdminWebServer admin = new AdminWebServer(9997);
 admin.start().get();
 </code></pre>
 
@@ -103,7 +103,6 @@ admin.start().get();
 <ul>
 <li>Basic monitoring of the JVM &amp; Threads</li>
 <li>Ping service to check our service is reachable</li>
-<li>Ability to <code>start</code>, <code>stop</code> &amp; <code>restart</code> our service (passing the service is optional for non-<a href="http://webbitserver.org">Webbit</a> services).</li>
 </ul><p>This service also exposes its own <code>HealthCheckRegistry</code> &amp; <code>MetricRegistry</code> that can be used by your service to monitor the health of and collect valuable application &amp; business metrics for your service.</p>
 
 <h3>Metrics</h3>
@@ -175,18 +174,7 @@ admin.start().get();
 
 <p><a href="http://127.0.0.1:9997/jvm"><code>http://localhost:9997/jvm</code></a> &amp; <a href="http://127.0.0.1:9997/dump"><code>http://localhost:9997/dump</code></a> will give you some JVM metrics and Thread Dumps respectivley.</p>
 
-<h3>Server Control</h3>
-
-<p>If you pass in an instance of a <a href="http://webbitserver.org">Webbit</a> server you have some control over the running of that service.</p>
-
-<ul>
-<li>
-<a href="http://127.0.0.1:9997/start"><code>/start</code></a> - Starts the service.  Throws if the service is already started.</li>
-<li>
-<a href="http://127.0.0.1:9997/stop"><code>/stop</code></a> - Stops the service.</li>
-<li>
-<a href="http://127.0.0.1:9997/restart"><code>/restart</code></a> - Stops and then Starts the service.</li>
-</ul><h3>Tasks</h3>
+<h3>Tasks</h3>
 
 <p>Tasks are arbitrary bits of code that can be run at any time from your <code>AdminWebServer</code> instance.  You can register as <code>Task</code> against the <code>TaskRegistry</code> instance created along with your <code>AdminWebServer</code> instance.</p>
 
