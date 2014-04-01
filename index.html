@@ -28,15 +28,18 @@
         </ul>
       </header>
       <section>
-        <h1>webbit-metrics</h1>
+        <h1>
+<a name="webbit-metrics" class="anchor" href="#webbit-metrics"><span class="octicon octicon-link"></span></a>webbit-metrics</h1>
 
 <p><a href="https://travis-ci.org/kouphax/webbit-metrics"><img src="https://travis-ci.org/kouphax/webbit-metrics.png?branch=master" alt="Build Status"></a></p>
 
 <p>A <a href="http://metrics.codahale.com">Metrics</a> backed <a href="http://webbitserver.org">Webbit</a> Server for great good. <strong>webbit-metrics</strong> acts as a companion server that can be run alongside other simple services.  This is heavily inspired by the approach that <a href="http://twitter.com">Twitter</a> take with <a href="twitter.github.io/finagle/">Finagle</a> and <a href="https://github.com/twitter/ostrich">Ostrich</a></p>
 
-<h2>Getting It</h2>
+<h2>
+<a name="getting-it" class="anchor" href="#getting-it"><span class="octicon octicon-link"></span></a>Getting It</h2>
 
-<h3>Maven</h3>
+<h3>
+<a name="maven" class="anchor" href="#maven"><span class="octicon octicon-link"></span></a>Maven</h3>
 
 <p>Repository</p>
 
@@ -55,7 +58,8 @@
 &lt;/dependency&gt;
 </code></pre>
 
-<h3>SBT</h3>
+<h3>
+<a name="sbt" class="anchor" href="#sbt"><span class="octicon octicon-link"></span></a>SBT</h3>
 
 <p>Resolver</p>
 
@@ -67,7 +71,8 @@
 <pre><code>"org.webbitserver" % "webbit-metrics" % "0.2-SNAPSHOT"
 </code></pre>
 
-<h2>AdminWebServer</h2>
+<h2>
+<a name="adminwebserver" class="anchor" href="#adminwebserver"><span class="octicon octicon-link"></span></a>AdminWebServer</h2>
 
 <p>Lets assume we have a <a href="http://webbitserver.org">Webbit</a> web server already.</p>
 
@@ -105,7 +110,8 @@ admin.start().get();
 <li>Ping service to check our service is reachable</li>
 </ul><p>This service also exposes its own <code>HealthCheckRegistry</code> &amp; <code>MetricRegistry</code> that can be used by your service to monitor the health of and collect valuable application &amp; business metrics for your service.</p>
 
-<h3>Metrics</h3>
+<h3>
+<a name="metrics" class="anchor" href="#metrics"><span class="octicon octicon-link"></span></a>Metrics</h3>
 
 <p>When an <code>AdminWebServer</code> is created it will create its own instance of a <code>MetricRegistry</code> that can be accessed via <code>admin.metrics</code>.  So lets add some metrics to our service.</p>
 
@@ -136,7 +142,8 @@ admin.start().get();
 
 <p>This is just a raw response from <a href="http://metrics.codahale.com">Metrics</a>, no need for any special sugar or transformation.  The <code>AdminWebServer</code> registry is a vanilla <a href="http://metrics.codahale.com">Metrics</a> <code>MetricRegistry</code> and so supports all of <a href="http://metrics.codahale.com/manual/core/">Metrics metrics</a> like <a href="http://metrics.codahale.com/manual/core/#gauges">Gauges</a>, <a href="http://metrics.codahale.com/manual/core/#counters">Counters</a>, <a href="http://metrics.codahale.com/manual/core/#histograms">Histograms</a>, <a href="http://metrics.codahale.com/manual/core/#meters">Meters</a> and <a href="http://metrics.codahale.com/manual/core/#timers">Timers</a>.</p>
 
-<h3>Healthchecks</h3>
+<h3>
+<a name="healthchecks" class="anchor" href="#healthchecks"><span class="octicon octicon-link"></span></a>Healthchecks</h3>
 
 <p>If your service relies on a database connection or some external service to function then <code>HealthChecks</code> help monitor that these things are actually reachable and working as expected.  You can add a healthcheck to the registry easily,</p>
 
@@ -166,15 +173,18 @@ admin.start().get();
 
 <p>It will return an approximate HTTP Status code as well (<code>200 - OK</code> if everything is healthy, <code>500 - Internal Server Error</code> if these is something up and <code>501 - Not Implemented</code> if there are no registered healthchecks.</p>
 
-<h3>Ping</h3>
+<h3>
+<a name="ping" class="anchor" href="#ping"><span class="octicon octicon-link"></span></a>Ping</h3>
 
 <p>Hitting <a href="http://127.0.0.1:9997/ping"><code>http://localhost:9997/ping</code></a> will simply return a <code>200 - OK</code> response with plain text body containing <code>pong</code>.  This is useful in situations where you want to know if a machine or service is actually still around and reachable</p>
 
-<h3>Thread Dump &amp; JVM Metrics</h3>
+<h3>
+<a name="thread-dump--jvm-metrics" class="anchor" href="#thread-dump--jvm-metrics"><span class="octicon octicon-link"></span></a>Thread Dump &amp; JVM Metrics</h3>
 
 <p><a href="http://127.0.0.1:9997/jvm"><code>http://localhost:9997/jvm</code></a> &amp; <a href="http://127.0.0.1:9997/dump"><code>http://localhost:9997/dump</code></a> will give you some JVM metrics and Thread Dumps respectivley.</p>
 
-<h3>Tasks</h3>
+<h3>
+<a name="tasks" class="anchor" href="#tasks"><span class="octicon octicon-link"></span></a>Tasks</h3>
 
 <p>Tasks are arbitrary bits of code that can be run at any time from your <code>AdminWebServer</code> instance.  You can register as <code>Task</code> against the <code>TaskRegistry</code> instance created along with your <code>AdminWebServer</code> instance.</p>
 
@@ -190,7 +200,8 @@ admin.start().get();
 
 <p>Any exceptions thrown in the course of running a task will be piped out to the browser.</p>
 
-<h2>InstrumentedMiddleware</h2>
+<h2>
+<a name="instrumentedmiddleware" class="anchor" href="#instrumentedmiddleware"><span class="octicon octicon-link"></span></a>InstrumentedMiddleware</h2>
 
 <p><code>InstrumentedMiddleware</code> is a Webbit handler that provides some basic metrics for requests.  Placing it at the head of your middleware stack for all requests in a <a href="http://webbitserver.org">Webbit</a> will monitor the entire request chain</p>
 
